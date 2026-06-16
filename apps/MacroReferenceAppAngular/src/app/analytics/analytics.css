@@ -1,0 +1,52 @@
+:host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* Body region is flex:1, min-height:0 — let this view scroll internally. */
+  overflow-y: auto;
+}
+
+/* KPI cards — mirror the blotter KPI conventions. */
+.macro-kpis {
+  display: flex;
+  gap: var(--space-5);
+}
+.macro-kpi {
+  flex: 1;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.macro-kpi-label {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+.macro-kpi-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-24);
+  margin-top: var(--space-2);
+  color: var(--fg-1);
+}
+
+/* Charts — responsive grid: 2 columns wide / 1 column narrow. */
+.macro-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+@media (max-width: 900px) {
+  .macro-charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.macro-chart-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}

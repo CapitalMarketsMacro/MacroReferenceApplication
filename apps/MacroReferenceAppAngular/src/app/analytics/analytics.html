@@ -1,0 +1,41 @@
+<!-- a) Analytics KPI cards (reuse blotter KPI markup/styles) -->
+<div class="macro-kpis">
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Total Notional</div>
+    <div class="macro-kpi-value">{{ totalNotional }}</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Open Orders</div>
+    <div class="macro-kpi-value">{{ openOrders }}</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Today's Trades</div>
+    <div class="macro-kpi-value">{{ todaysTrades }}</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Avg Fill</div>
+    <div class="macro-kpi-value">{{ avgFill }}</div>
+  </div>
+</div>
+
+<!-- b) Charts -->
+<div class="macro-charts">
+  <div class="macro-chart-panel">
+    <ag-charts
+      [options]="curve()"
+      style="display: block; height: 300px; width: 100%"
+    ></ag-charts>
+  </div>
+  <div class="macro-chart-panel">
+    <ag-charts
+      [options]="notional()"
+      style="display: block; height: 300px; width: 100%"
+    ></ag-charts>
+  </div>
+  <div class="macro-chart-panel">
+    <ag-charts
+      [options]="volume()"
+      style="display: block; height: 300px; width: 100%"
+    ></ag-charts>
+  </div>
+</div>

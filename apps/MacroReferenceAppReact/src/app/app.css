@@ -182,3 +182,78 @@
   justify-content: flex-end;
   gap: var(--space-4);
 }
+
+/* ---------- Shared panel ---------- */
+.macro-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.macro-panel-header {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- Analytics view ---------- */
+.macro-analytics {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.macro-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.macro-chart-panel {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .macro-chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Orders view ---------- */
+.macro-orders {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.macro-orders-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.macro-orders-master {
+  flex: 3;
+}
+
+.macro-orders-trades {
+  flex: 2;
+}
+
+.macro-panel-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.macro-orders-panel .ag-root-wrapper {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-1);
+}

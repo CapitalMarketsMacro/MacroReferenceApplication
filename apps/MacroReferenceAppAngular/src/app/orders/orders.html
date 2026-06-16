@@ -1,0 +1,28 @@
+<!-- 1) Order Blotter (master/detail) -->
+<section class="macro-panel macro-panel-orders">
+  <header class="macro-panel-header">Order Blotter</header>
+  <div class="macro-panel-body">
+    <ag-grid-angular
+      [theme]="agTheme()"
+      [gridOptions]="orderGridOptions()"
+      [rowData]="orders"
+      [getRowId]="getRowId"
+      style="width: 100%; height: 100%"
+    ></ag-grid-angular>
+  </div>
+</section>
+
+<!-- 2) Trade Blotter (flat) -->
+<section class="macro-panel macro-panel-trades">
+  <header class="macro-panel-header">Trade Blotter</header>
+  <div class="macro-panel-body">
+    <ag-grid-angular
+      [theme]="agTheme()"
+      [columnDefs]="tradeColumns"
+      [rowData]="trades"
+      [getRowId]="getTradeRowId"
+      [defaultColDef]="tradeDefaultColDef"
+      style="width: 100%; height: 100%"
+    ></ag-grid-angular>
+  </div>
+</section>

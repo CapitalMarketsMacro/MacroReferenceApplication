@@ -5,7 +5,7 @@
       <img src="logo-lockup.svg" alt="Macro" style="height: 18px" />
     </a>
 
-    <p-menubar [model]="navItems" styleClass="macro-nav"></p-menubar>
+    <p-menubar [model]="navItems()" styleClass="macro-nav"></p-menubar>
 
     <div class="macro-header-right">
       <span class="macro-live">
@@ -26,6 +26,16 @@
 
   <!-- 2) Body -->
   <div class="macro-body">
-    <app-blotter></app-blotter>
+    @switch (activeView()) {
+      @case ('rates') {
+        <app-blotter></app-blotter>
+      }
+      @case ('analytics') {
+        <app-analytics></app-analytics>
+      }
+      @case ('orders') {
+        <app-orders></app-orders>
+      }
+    }
   </div>
 </div>
