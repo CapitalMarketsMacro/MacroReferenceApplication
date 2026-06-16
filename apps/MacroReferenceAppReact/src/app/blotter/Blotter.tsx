@@ -15,7 +15,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 
-import { buildAgGridTheme } from '../macro/ag-grid-theme';
+import { buildAgGridTheme, type GridDensity } from '../macro/ag-grid-theme';
 import {
   ASSET_CLASS_FILTERS,
   createInstruments,
@@ -40,10 +40,10 @@ const VENUE_OPTIONS = [
   'MTS',
 ];
 
-function densityAttr(d: Density): string | undefined {
+function densityKey(d: Density): GridDensity {
   if (d === 'Compact') return 'tight';
   if (d === 'Comfortable') return 'cozy';
-  return undefined;
+  return 'normal';
 }
 
 const priceFormatter = (p: ValueFormatterParams) =>
@@ -55,8 +55,8 @@ export function Blotter() {
   const [search, setSearch] = useState('');
   const [density, setDensity] = useState<Density>('Compact');
 
-  const [theme, setTheme] = useState(() =>
-    buildAgGridTheme(document.documentElement.classList.contains('dark')),
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.classList.contains('dark'),
   );
 
   const [ticketOpen, setTicketOpen] = useState(false);
@@ -70,12 +70,10 @@ export function Blotter() {
 
   const gridApiRef = useRef<GridApi | null>(null);
 
-  // Recompute the AG Grid theme whenever the .dark class on <html> changes.
+  // Track the .dark class on <html> so the grid theme follows light/dark.
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setTheme(
-        buildAgGridTheme(document.documentElement.classList.contains('dark')),
-      );
+      setIsDark(document.documentElement.classList.contains('dark'));
     });
     observer.observe(document.documentElement, {
       attributes: true,
@@ -83,6 +81,17 @@ export function Blotter() {
     });
     return () => observer.disconnect();
   }, []);
+
+  // Theme follows color scheme + density (density resizes the grid via params).
+  const theme = useMemo(
+    () => buildAgGridTheme(isDark, densityKey(density)),
+    [isDark, density],
+  );
+
+  // The theme param drives row sizing; re-measure rows when density changes.
+  useEffect(() => {
+    gridApiRef.current?.resetRowHeights();
+  }, [density]);
 
   // Live ticking — produce a new frame every 900ms.
   useEffect(() => {
@@ -264,7 +273,7 @@ export function Blotter() {
     </div>
   );
 
-  const dataDensity = densityAttr(density);
+  const dataDensity = densityKey(density);
 
   return (
     <div className="macro-blotter">
@@ -289,10 +298,7 @@ export function Blotter() {
         </div>
       </div>
 
-      <div
-        className="macro-grid-wrap"
-        {...(dataDensity ? { 'data-density': dataDensity } : {})}
-      >
+      <div className="macro-grid-wrap" data-density={dataDensity}>
         <AgGridReact
           theme={theme}
           columnDefs={columnDefs}

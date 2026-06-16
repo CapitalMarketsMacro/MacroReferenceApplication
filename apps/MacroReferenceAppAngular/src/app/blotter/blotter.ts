@@ -25,7 +25,7 @@ import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 
-import { buildAgGridTheme } from '../macro/ag-grid-theme';
+import { buildAgGridTheme, type GridDensity } from '../macro/ag-grid-theme';
 import {
   ASSET_CLASS_FILTERS,
   type AssetClassFilter,
@@ -69,8 +69,10 @@ const VENUES = [
 export class Blotter implements OnInit, OnDestroy {
   private readonly themeSvc = inject(ThemeService);
 
-  /** AG Grid theme — recomputes whenever the shared dark flag flips. */
-  readonly theme = computed<Theme>(() => buildAgGridTheme(this.themeSvc.isDark()));
+  /** AG Grid theme — recomputes whenever the dark flag or density changes. */
+  readonly theme = computed<Theme>(() =>
+    buildAgGridTheme(this.themeSvc.isDark(), this.densityKey()),
+  );
 
   // ----- Filter toolbar state -----
   readonly assetClassOptions = ASSET_CLASS_FILTERS.map((v) => ({ label: v, value: v }));
@@ -95,14 +97,15 @@ export class Blotter implements OnInit, OnDestroy {
   set densityModel(v: Density) {
     this.density.set(v);
   }
-  readonly densityAttr = computed<string | null>(() => {
+  /** Maps the density label to the AG Grid theme density key. */
+  readonly densityKey = computed<GridDensity>(() => {
     switch (this.density()) {
       case 'Compact':
         return 'tight';
       case 'Comfortable':
         return 'cozy';
       default:
-        return null;
+        return 'normal';
     }
   });
 
@@ -231,6 +234,13 @@ export class Blotter implements OnInit, OnDestroy {
     effect(() => {
       const data = this.filteredRows();
       this.gridApi?.setGridOption('rowData', data);
+    });
+
+    // The theme param drives row sizing; re-measure rows when density changes.
+    effect(() => {
+      this.densityKey();
+      const api = this.gridApi;
+      if (api) setTimeout(() => api.resetRowHeights(), 0);
     });
   }
 
