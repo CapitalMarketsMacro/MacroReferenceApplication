@@ -1,0 +1,144 @@
+<!-- a) Filter toolbar -->
+<p-toolbar styleClass="macro-toolbar">
+  <div class="p-toolbar-group-start macro-toolbar-group">
+    <p-selectButton
+      [options]="assetClassOptions"
+      [(ngModel)]="assetClassModel"
+      optionLabel="label"
+      optionValue="value"
+      [allowEmpty]="false"
+    ></p-selectButton>
+    <input
+      pInputText
+      type="text"
+      class="macro-search"
+      placeholder="Filter instrument…"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+  </div>
+
+  <div class="p-toolbar-group-end macro-toolbar-group">
+    <p-select
+      [options]="densityOptions"
+      [(ngModel)]="densityModel"
+      styleClass="macro-density"
+    ></p-select>
+    <p-button
+      label="Columns"
+      icon="pi pi-table"
+      [outlined]="true"
+      size="small"
+      (onClick)="toggleColumns()"
+    ></p-button>
+    <p-button
+      label="New Order"
+      icon="pi pi-plus"
+      size="small"
+      (onClick)="openTicket()"
+    ></p-button>
+  </div>
+</p-toolbar>
+
+<!-- b) KPI cards -->
+<div class="macro-kpis">
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Instruments</div>
+    <div class="macro-kpi-value">{{ kpiInstruments() }}</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Live</div>
+    <div class="macro-kpi-value">{{ kpiLive() }}</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Σ Notional</div>
+    <div class="macro-kpi-value">$2.45BN</div>
+  </div>
+  <div class="macro-kpi">
+    <div class="macro-kpi-label">Day P&amp;L</div>
+    <div class="macro-kpi-value macro-pnl">+$182.4K</div>
+  </div>
+</div>
+
+<!-- c) Blotter grid -->
+<div class="macro-grid-wrap" [attr.data-density]="densityAttr()">
+  <ag-grid-angular
+    class="macro-grid"
+    [theme]="theme()"
+    [columnDefs]="columnDefs"
+    [rowData]="filteredRows()"
+    [gridOptions]="gridOptions"
+    [getRowId]="getRowId"
+    (gridReady)="onGridReady($event)"
+  ></ag-grid-angular>
+</div>
+
+<!-- d) Order ticket dialog -->
+<p-dialog
+  header="New Order"
+  [(visible)]="ticketVisibleModel"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  styleClass="macro-ticket"
+>
+  <div class="macro-ticket-body">
+    <div class="macro-field">
+      <span class="macro-field-label">Instrument</span>
+      <div class="macro-field-static">{{ ticketInstrumentName || '—' }}</div>
+    </div>
+
+    <div class="macro-field">
+      <span class="macro-field-label">Side</span>
+      <p-selectButton
+        [options]="sideOptions"
+        [(ngModel)]="side"
+        optionLabel="label"
+        optionValue="value"
+        [allowEmpty]="false"
+      ></p-selectButton>
+    </div>
+
+    <div class="macro-field">
+      <label class="macro-field-label" for="ticket-qty">Quantity</label>
+      <p-inputNumber
+        inputId="ticket-qty"
+        [(ngModel)]="quantity"
+        suffix=" MM"
+        [showButtons]="false"
+        inputStyleClass="macro-num-input"
+      ></p-inputNumber>
+    </div>
+
+    <div class="macro-field">
+      <label class="macro-field-label" for="ticket-price">Price</label>
+      <p-inputNumber
+        inputId="ticket-price"
+        [(ngModel)]="price"
+        [step]="0.001"
+        [minFractionDigits]="3"
+        [maxFractionDigits]="5"
+        inputStyleClass="macro-num-input"
+      ></p-inputNumber>
+    </div>
+
+    <div class="macro-field">
+      <label class="macro-field-label" for="ticket-venue">Venue</label>
+      <p-select
+        inputId="ticket-venue"
+        [options]="venueOptions"
+        [(ngModel)]="venue"
+        styleClass="macro-venue"
+      ></p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancel"
+      [text]="true"
+      size="small"
+      (onClick)="cancelTicket()"
+    ></p-button>
+    <p-button label="Submit Order" size="small" (onClick)="submitTicket()"></p-button>
+  </ng-template>
+</p-dialog>

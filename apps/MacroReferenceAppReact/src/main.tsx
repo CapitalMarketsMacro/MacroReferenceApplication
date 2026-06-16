@@ -1,7 +1,13 @@
 import { StrictMode } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import * as ReactDOM from 'react-dom/client';
+import { PrimeReactProvider } from 'primereact/api';
+import './styles.css';
+// Register AG Grid Community + Enterprise modules (side effect) before any grid.
+import './app/macro/ag-grid-modules';
 import App from './app/app';
+
+// Dark-default trading UI.
+document.documentElement.classList.add('dark');
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -9,8 +15,8 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <BrowserRouter>
+    <PrimeReactProvider value={{ ripple: true }}>
       <App />
-    </BrowserRouter>
+    </PrimeReactProvider>
   </StrictMode>,
 );

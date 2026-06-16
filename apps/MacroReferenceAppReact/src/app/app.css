@@ -1,0 +1,184 @@
+/* Macro Reference — app shell + blotter layout (macro tokens). */
+
+.macro-app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+
+/* ---------- Header app-shell bar ---------- */
+.macro-app-bar {
+  border-bottom: 1px solid var(--border-1);
+  background: var(--bg-app);
+  padding: 0 var(--space-6);
+  height: auto;
+}
+
+.macro-app-bar .p-menubar {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: var(--space-3) 0;
+  gap: var(--space-5);
+}
+
+.macro-brand {
+  display: block;
+  margin-right: var(--space-6);
+}
+
+.macro-app-bar .p-menuitem-active > .p-menuitem-content .p-menuitem-link,
+.macro-app-bar .p-menuitem-active .p-menuitem-link {
+  color: var(--fg-1);
+  border-bottom: 2px solid var(--brand);
+}
+
+.macro-header-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.macro-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--mkt-up);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-allcaps);
+}
+
+.macro-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-round);
+  background: var(--mkt-up);
+  box-shadow: 0 0 6px var(--mkt-up);
+}
+
+.macro-user-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-round);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-2);
+  color: var(--fg-1);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---------- Body ---------- */
+.macro-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.macro-blotter {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ---------- Filter toolbar ---------- */
+.macro-filter-toolbar {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+}
+
+.macro-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* ---------- KPI cards ---------- */
+.macro-kpi-row {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.macro-kpi-card {
+  flex: 1;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.macro-kpi-label {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+
+.macro-kpi-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-24);
+  font-weight: var(--fw-medium);
+  color: var(--fg-1);
+  margin-top: var(--space-2);
+}
+
+.macro-kpi-pnl {
+  color: var(--mkt-up);
+}
+
+/* ---------- Grid ---------- */
+.macro-grid-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.macro-grid-wrap .ag-root-wrapper {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-1);
+}
+
+/* ---------- Order ticket ---------- */
+.macro-ticket {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.macro-ticket-inst {
+  font-family: var(--font-mono);
+  font-size: var(--fs-14);
+  color: var(--fg-1);
+}
+
+.macro-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.macro-field-label {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+
+.macro-ticket-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-4);
+}

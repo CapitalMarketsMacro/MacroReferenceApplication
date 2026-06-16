@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+/* Macro Reference — global styles */
+@import './macro-theme/colors_and_type.css';
+@import './macro-theme/ag-grid-overrides.css';
+@import 'primeicons/primeicons.css';
+
+/* Token bridge — lets the vendored override files resolve their aliases. */
+:root {
+  --r-xs: var(--radius-xs);
+  --r-sm: var(--radius-sm);
+  --r-md: var(--radius-md);
+  --r-lg: var(--radius-lg);
+  --r-xl: var(--radius-xl);
+  --motion-flash: var(--dur-flash);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}

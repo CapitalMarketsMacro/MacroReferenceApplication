@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+@import './macro-theme/colors_and_type.css';
+@import 'primereact/resources/themes/lara-dark-blue/theme.css';
+@import 'primeicons/primeicons.css';
+@import './macro-theme/primereact-macro.css';
+@import './macro-theme/ag-grid-overrides.css';
+
+/* Token bridge — let the override files resolve their aliases. */
+:root {
+  --r-xs: var(--radius-xs);
+  --r-sm: var(--radius-sm);
+  --r-md: var(--radius-md);
+  --r-lg: var(--radius-lg);
+  --r-xl: var(--radius-xl);
+  --motion-flash: var(--dur-flash);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  height: 100%;
+}

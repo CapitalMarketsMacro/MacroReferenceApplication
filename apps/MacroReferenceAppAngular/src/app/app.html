@@ -1,2 +1,31 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div class="macro-shell">
+  <!-- 1) Header app-shell bar -->
+  <header class="macro-header">
+    <a class="macro-brand" href="#">
+      <img src="logo-lockup.svg" alt="Macro" style="height: 18px" />
+    </a>
+
+    <p-menubar [model]="navItems" styleClass="macro-nav"></p-menubar>
+
+    <div class="macro-header-right">
+      <span class="macro-live">
+        <span class="macro-live-dot"></span>
+        LIVE
+      </span>
+      <button
+        type="button"
+        class="macro-theme-toggle"
+        [attr.aria-label]="isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
+        (click)="toggleTheme()"
+      >
+        <i [class]="themeIcon()"></i>
+      </button>
+      <span class="macro-user-chip">JL</span>
+    </div>
+  </header>
+
+  <!-- 2) Body -->
+  <div class="macro-body">
+    <app-blotter></app-blotter>
+  </div>
+</div>

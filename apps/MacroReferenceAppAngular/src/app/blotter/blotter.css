@@ -1,0 +1,90 @@
+:host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Toolbar */
+::ng-deep .macro-toolbar.p-toolbar {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+}
+.macro-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.macro-search {
+  width: 220px;
+}
+
+/* KPI cards */
+.macro-kpis {
+  display: flex;
+  gap: var(--space-5);
+}
+.macro-kpi {
+  flex: 1;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.macro-kpi-label {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+.macro-kpi-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-24);
+  margin-top: var(--space-2);
+  color: var(--fg-1);
+}
+.macro-pnl {
+  color: var(--mkt-up);
+}
+
+/* Grid */
+.macro-grid-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.macro-grid {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Order ticket */
+.macro-ticket-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.macro-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.macro-field-label {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+.macro-field-static {
+  font-family: var(--font-mono);
+  color: var(--fg-1);
+}
+::ng-deep .macro-ticket .macro-num-input,
+::ng-deep .macro-ticket .macro-venue,
+::ng-deep .macro-ticket .p-inputnumber {
+  width: 100%;
+}
