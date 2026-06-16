@@ -46,8 +46,16 @@ function densityKey(d: Density): GridDensity {
   return 'normal';
 }
 
+/** Format a price using the row's asset-class precision. Guards group/agg rows
+ * (which have no `data`) so grouping doesn't crash the render. */
+function formatPrice(value: unknown, data?: Instrument): string {
+  if (value == null) return '';
+  const decimals = data ? decimalsFor(data.ac) : 4;
+  return Number(value).toFixed(decimals);
+}
+
 const priceFormatter = (p: ValueFormatterParams) =>
-  p.value == null ? '' : Number(p.value).toFixed(decimalsFor(p.data.ac));
+  formatPrice(p.value, p.data as Instrument | undefined);
 
 export function Blotter() {
   const [rows, setRows] = useState<Instrument[]>(() => createInstruments());
@@ -159,8 +167,10 @@ export function Blotter() {
           'mkt-down': (p) => p.value < 0,
         },
         valueFormatter: (p) =>
-          (p.value >= 0 ? '+' : '') +
-          Number(p.value).toFixed(decimalsFor(p.data.ac)),
+          p.value == null
+            ? ''
+            : (p.value >= 0 ? '+' : '') +
+              formatPrice(p.value, p.data as Instrument | undefined),
       },
       { field: 'venue', headerName: 'Venue', width: 120 },
       { field: 'status', headerName: 'Status', width: 96 },
