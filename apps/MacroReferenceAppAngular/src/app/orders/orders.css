@@ -39,7 +39,7 @@
   min-height: 0;
   display: flex;
 }
-.macro-panel-body > ag-grid-angular {
+.macro-panel-body > app-macro-grid {
   flex: 1;
   min-height: 0;
 }

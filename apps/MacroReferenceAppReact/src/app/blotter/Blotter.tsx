@@ -1,21 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AgGridReact } from 'ag-grid-react';
 import type {
   ColDef,
   GridOptions,
-  GridReadyEvent,
-  GridApi,
   ValueFormatterParams,
 } from 'ag-grid-community';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import { SelectButton } from 'primereact/selectbutton';
 import { Dropdown } from 'primereact/dropdown';
-import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 
-import { buildAgGridTheme, type GridDensity } from '../macro/ag-grid-theme';
+import { MacroGrid } from '../macro/MacroGrid';
 import {
   ASSET_CLASS_FILTERS,
   createInstruments,
@@ -25,10 +21,8 @@ import {
   type Instrument,
 } from '../macro/instruments';
 
-type Density = 'Compact' | 'Normal' | 'Comfortable';
 type Side = 'Buy' | 'Sell';
 
-const DENSITY_OPTIONS: Density[] = ['Compact', 'Normal', 'Comfortable'];
 const VENUE_OPTIONS = [
   'TradeWeb',
   'BBG',
@@ -39,12 +33,6 @@ const VENUE_OPTIONS = [
   'Eurex',
   'MTS',
 ];
-
-function densityKey(d: Density): GridDensity {
-  if (d === 'Compact') return 'tight';
-  if (d === 'Comfortable') return 'cozy';
-  return 'normal';
-}
 
 /** Format a price using the row's asset-class precision. Guards group/agg rows
  * (which have no `data`) so grouping doesn't crash the render. */
@@ -60,12 +48,6 @@ const priceFormatter = (p: ValueFormatterParams) =>
 export function Blotter() {
   const [rows, setRows] = useState<Instrument[]>(() => createInstruments());
   const [assetClass, setAssetClass] = useState<AssetClassFilter>('ALL');
-  const [search, setSearch] = useState('');
-  const [density, setDensity] = useState<Density>('Compact');
-
-  const [isDark, setIsDark] = useState(() =>
-    document.documentElement.classList.contains('dark'),
-  );
 
   const [ticketOpen, setTicketOpen] = useState(false);
   const [side, setSide] = useState<Side>('Buy');
@@ -76,31 +58,6 @@ export function Blotter() {
     null,
   );
 
-  const gridApiRef = useRef<GridApi | null>(null);
-
-  // Track the .dark class on <html> so the grid theme follows light/dark.
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  // Theme follows color scheme + density (density resizes the grid via params).
-  const theme = useMemo(
-    () => buildAgGridTheme(isDark, densityKey(density)),
-    [isDark, density],
-  );
-
-  // The theme param drives row sizing; re-measure rows when density changes.
-  useEffect(() => {
-    gridApiRef.current?.resetRowHeights();
-  }, [density]);
-
   // Live ticking — produce a new frame every 900ms.
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -109,14 +66,16 @@ export function Blotter() {
     return () => window.clearInterval(id);
   }, []);
 
-  const filteredRows = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return rows.filter((r) => {
-      if (assetClass !== 'ALL' && r.ac !== assetClass) return false;
-      if (term && !r.name.toLowerCase().includes(term)) return false;
-      return true;
-    });
-  }, [rows, assetClass, search]);
+  // Asset-class narrowing only — the free-text search is now the wrapper's
+  // generic quick filter.
+  const filteredRows = useMemo(
+    () =>
+      assetClass === 'ALL' ? rows : rows.filter((r) => r.ac === assetClass),
+    [rows, assetClass],
+  );
+
+  const filteredRowsRef = useRef(filteredRows);
+  filteredRowsRef.current = filteredRows;
 
   const liveCount = useMemo(
     () => filteredRows.filter((r) => r.status === 'live').length,
@@ -178,19 +137,9 @@ export function Blotter() {
     [],
   );
 
+  // Rates-specific grid options (the wrapper owns sideBar/defaultColDef/theme).
   const gridOptions = useMemo<GridOptions>(
     () => ({
-      defaultColDef: {
-        sortable: true,
-        filter: true,
-        resizable: true,
-        flex: 1,
-        minWidth: 90,
-      },
-      sideBar: {
-        toolPanels: ['columns', 'filters'],
-        hiddenByDefault: true,
-      },
       rowGroupPanelShow: 'always',
       rowSelection: { mode: 'multiRow' },
       cellSelection: true,
@@ -212,26 +161,15 @@ export function Blotter() {
     [],
   );
 
-  const onGridReady = useCallback((e: GridReadyEvent) => {
-    gridApiRef.current = e.api;
-  }, []);
-
-  const toggleColumns = useCallback(() => {
-    const api = gridApiRef.current;
-    if (!api) return;
-    api.setSideBarVisible(!api.isSideBarVisible());
-  }, []);
-
   const openTicket = useCallback(() => {
-    const selected = gridApiRef.current?.getSelectedRows?.()[0];
-    const inst = selected ?? filteredRows[0] ?? rows[0] ?? null;
+    const inst = filteredRowsRef.current[0] ?? rows[0] ?? null;
     setTicketInstrument(inst);
     setSide('Buy');
     setQty(25);
     setPrice(inst ? Number(inst.last.toFixed(decimalsFor(inst.ac))) : 0);
     setVenue(inst?.venue && VENUE_OPTIONS.includes(inst.venue) ? inst.venue : VENUE_OPTIONS[0]);
     setTicketOpen(true);
-  }, [filteredRows, rows]);
+  }, [rows]);
 
   const submitOrder = useCallback(() => {
     console.log('Submit Order', {
@@ -254,24 +192,11 @@ export function Blotter() {
         }}
         allowEmpty={false}
       />
-      <span className="p-input-icon-left">
-        <InputText
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Filter instrument…"
-        />
-      </span>
     </div>
   );
 
   const toolbarEnd = (
     <div className="macro-toolbar-group">
-      <Dropdown
-        value={density}
-        options={DENSITY_OPTIONS}
-        onChange={(e) => setDensity(e.value as Density)}
-      />
-      <Button label="Columns" icon="pi pi-table" outlined onClick={toggleColumns} />
       <Button label="New Order" icon="pi pi-plus" onClick={openTicket} />
     </div>
   );
@@ -282,8 +207,6 @@ export function Blotter() {
       <Button label="Submit Order" icon="pi pi-check" onClick={submitOrder} />
     </div>
   );
-
-  const dataDensity = densityKey(density);
 
   return (
     <div className="macro-blotter">
@@ -308,15 +231,13 @@ export function Blotter() {
         </div>
       </div>
 
-      <div className="macro-grid-wrap" data-density={dataDensity}>
-        <AgGridReact
-          theme={theme}
-          columnDefs={columnDefs}
+      <div className="macro-grid-wrap">
+        <MacroGrid
           rowData={filteredRows}
-          gridOptions={gridOptions}
+          columnDefs={columnDefs}
           getRowId={getRowId}
-          onGridReady={onGridReady}
-          enableCharts
+          gridOptions={gridOptions}
+          searchPlaceholder="Filter instrument…"
         />
       </div>
 

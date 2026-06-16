@@ -2,13 +2,12 @@
 <section class="macro-panel macro-panel-orders">
   <header class="macro-panel-header">Order Blotter</header>
   <div class="macro-panel-body">
-    <ag-grid-angular
-      [theme]="agTheme()"
-      [gridOptions]="orderGridOptions()"
+    <app-macro-grid
       [rowData]="orders"
       [getRowId]="getRowId"
-      style="width: 100%; height: 100%"
-    ></ag-grid-angular>
+      [gridOptions]="orderGridOptions"
+      title="Order Blotter"
+    ></app-macro-grid>
   </div>
 </section>
 
@@ -16,13 +15,11 @@
 <section class="macro-panel macro-panel-trades">
   <header class="macro-panel-header">Trade Blotter</header>
   <div class="macro-panel-body">
-    <ag-grid-angular
-      [theme]="agTheme()"
-      [columnDefs]="tradeColumns"
+    <app-macro-grid
       [rowData]="trades"
+      [columnDefs]="tradeColumns"
       [getRowId]="getTradeRowId"
-      [defaultColDef]="tradeDefaultColDef"
-      style="width: 100%; height: 100%"
-    ></ag-grid-angular>
+      title="Trade Blotter"
+    ></app-macro-grid>
   </div>
 </section>

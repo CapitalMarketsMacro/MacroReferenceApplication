@@ -3,29 +3,18 @@ import {
   OnDestroy,
   OnInit,
   computed,
-  effect,
-  inject,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AgGridAngular } from 'ag-grid-angular';
-import type {
-  ColDef,
-  GridApi,
-  GridOptions,
-  GridReadyEvent,
-  GetRowIdParams,
-  Theme,
-} from 'ag-grid-community';
+import type { ColDef, GridOptions, GetRowIdParams } from 'ag-grid-community';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 
-import { buildAgGridTheme, type GridDensity } from '../macro/ag-grid-theme';
+import { MacroGrid } from '../macro/macro-grid';
 import {
   ASSET_CLASS_FILTERS,
   type AssetClassFilter,
@@ -34,9 +23,6 @@ import {
   decimalsFor,
   tickInstruments,
 } from '../macro/instruments';
-import { ThemeService } from '../theme.service';
-
-type Density = 'Compact' | 'Normal' | 'Comfortable';
 
 const VENUES = [
   'TradeWeb',
@@ -54,12 +40,11 @@ const VENUES = [
   standalone: true,
   imports: [
     FormsModule,
-    AgGridAngular,
+    MacroGrid,
     ToolbarModule,
     ButtonModule,
     SelectModule,
     SelectButtonModule,
-    InputTextModule,
     InputNumberModule,
     DialogModule,
   ],
@@ -67,17 +52,9 @@ const VENUES = [
   styleUrl: './blotter.css',
 })
 export class Blotter implements OnInit, OnDestroy {
-  private readonly themeSvc = inject(ThemeService);
-
-  /** AG Grid theme — recomputes whenever the dark flag or density changes. */
-  readonly theme = computed<Theme>(() =>
-    buildAgGridTheme(this.themeSvc.isDark(), this.densityKey()),
-  );
-
-  // ----- Filter toolbar state -----
+  // ----- Filter toolbar state (rates-specific) -----
   readonly assetClassOptions = ASSET_CLASS_FILTERS.map((v) => ({ label: v, value: v }));
   readonly assetClass = signal<AssetClassFilter>('ALL');
-  readonly search = signal('');
 
   /** ngModel bridge for the asset-class SelectButton. */
   get assetClassModel(): AssetClassFilter {
@@ -87,39 +64,13 @@ export class Blotter implements OnInit, OnDestroy {
     this.assetClass.set(v);
   }
 
-  readonly densityOptions: Density[] = ['Compact', 'Normal', 'Comfortable'];
-  readonly density = signal<Density>('Compact');
-
-  /** ngModel bridge for the density Select. */
-  get densityModel(): Density {
-    return this.density();
-  }
-  set densityModel(v: Density) {
-    this.density.set(v);
-  }
-  /** Maps the density label to the AG Grid theme density key. */
-  readonly densityKey = computed<GridDensity>(() => {
-    switch (this.density()) {
-      case 'Compact':
-        return 'tight';
-      case 'Comfortable':
-        return 'cozy';
-      default:
-        return 'normal';
-    }
-  });
-
   // ----- Grid data -----
   private readonly rows = signal<Instrument[]>(createInstruments());
 
+  /** Asset-class filter only — the text search is now the wrapper's quick filter. */
   readonly filteredRows = computed<Instrument[]>(() => {
     const ac = this.assetClass();
-    const q = this.search().trim().toLowerCase();
-    return this.rows().filter((r) => {
-      if (ac !== 'ALL' && r.ac !== ac) return false;
-      if (q && !r.name.toLowerCase().includes(q)) return false;
-      return true;
-    });
+    return this.rows().filter((r) => ac === 'ALL' || r.ac === ac);
   });
 
   // ----- KPI cards -----
@@ -150,7 +101,6 @@ export class Blotter implements OnInit, OnDestroy {
   ticketInstrumentName = '';
 
   // ----- Grid wiring -----
-  private gridApi?: GridApi<Instrument>;
   private tickHandle?: ReturnType<typeof setInterval>;
 
   readonly getRowId = (params: GetRowIdParams<Instrument>) => params.data.id;
@@ -204,17 +154,8 @@ export class Blotter implements OnInit, OnDestroy {
     { field: 'status', headerName: 'Status', width: 96 },
   ];
 
-  readonly defaultColDef: ColDef = {
-    sortable: true,
-    filter: true,
-    resizable: true,
-    flex: 1,
-    minWidth: 90,
-  };
-
+  /** Rates-specific grid options (the wrapper owns sideBar/defaultColDef/theme/density). */
   readonly gridOptions: GridOptions<Instrument> = {
-    defaultColDef: this.defaultColDef,
-    sideBar: { toolPanels: ['columns', 'filters'], hiddenByDefault: true },
     rowGroupPanelShow: 'always',
     rowSelection: { mode: 'multiRow' },
     cellSelection: true,
@@ -229,21 +170,6 @@ export class Blotter implements OnInit, OnDestroy {
     },
   };
 
-  constructor() {
-    // Keep the grid's displayed rows in sync with the active filter.
-    effect(() => {
-      const data = this.filteredRows();
-      this.gridApi?.setGridOption('rowData', data);
-    });
-
-    // The theme param drives row sizing; re-measure rows when density changes.
-    effect(() => {
-      this.densityKey();
-      const api = this.gridApi;
-      if (api) setTimeout(() => api.resetRowHeights(), 0);
-    });
-  }
-
   ngOnInit(): void {
     this.tickHandle = setInterval(() => {
       this.rows.set(tickInstruments(this.rows()));
@@ -252,15 +178,6 @@ export class Blotter implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.tickHandle) clearInterval(this.tickHandle);
-  }
-
-  onGridReady(e: GridReadyEvent<Instrument>): void {
-    this.gridApi = e.api;
-  }
-
-  toggleColumns(): void {
-    if (!this.gridApi) return;
-    this.gridApi.setSideBarVisible(!this.gridApi.isSideBarVisible());
   }
 
   openTicket(): void {

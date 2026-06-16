@@ -18,9 +18,6 @@
   align-items: center;
   gap: var(--space-5);
 }
-.macro-search {
-  width: 220px;
-}
 
 /* KPI cards */
 .macro-kpis {
@@ -50,16 +47,19 @@
   color: var(--mkt-up);
 }
 
-/* Grid */
+/* Grid — hosts the MacroGrid wrapper (toolbar + grid). */
 .macro-grid-wrap {
   flex: 1;
   min-height: 0;
   display: flex;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
-.macro-grid {
+.macro-grid-wrap > app-macro-grid {
   flex: 1;
   min-height: 0;
-  width: 100%;
 }
 
 /* Order ticket */

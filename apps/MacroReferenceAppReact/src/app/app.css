@@ -151,6 +151,46 @@
   border: 1px solid var(--border-1);
 }
 
+/* ---------- MacroGrid wrapper ---------- */
+.macro-grid {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.macro-grid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-1);
+  background: var(--bg-panel);
+}
+
+.macro-grid-title {
+  text-transform: uppercase;
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+
+.macro-grid-toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+.macro-grid-search {
+  width: 200px;
+}
+
+.macro-grid-area {
+  flex: 1;
+  min-height: 0;
+}
+
 /* ---------- Order ticket ---------- */
 .macro-ticket {
   display: flex;

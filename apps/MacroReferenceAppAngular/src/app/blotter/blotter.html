@@ -1,4 +1,4 @@
-<!-- a) Filter toolbar -->
+<!-- a) Filter toolbar (rates-specific) -->
 <p-toolbar styleClass="macro-toolbar">
   <div class="p-toolbar-group-start macro-toolbar-group">
     <p-selectButton
@@ -8,29 +8,9 @@
       optionValue="value"
       [allowEmpty]="false"
     ></p-selectButton>
-    <input
-      pInputText
-      type="text"
-      class="macro-search"
-      placeholder="Filter instrument…"
-      [ngModel]="search()"
-      (ngModelChange)="search.set($event)"
-    />
   </div>
 
   <div class="p-toolbar-group-end macro-toolbar-group">
-    <p-select
-      [options]="densityOptions"
-      [(ngModel)]="densityModel"
-      styleClass="macro-density"
-    ></p-select>
-    <p-button
-      label="Columns"
-      icon="pi pi-table"
-      [outlined]="true"
-      size="small"
-      (onClick)="toggleColumns()"
-    ></p-button>
     <p-button
       label="New Order"
       icon="pi pi-plus"
@@ -61,16 +41,14 @@
 </div>
 
 <!-- c) Blotter grid -->
-<div class="macro-grid-wrap" [attr.data-density]="densityKey()">
-  <ag-grid-angular
-    class="macro-grid"
-    [theme]="theme()"
-    [columnDefs]="columnDefs"
+<div class="macro-grid-wrap">
+  <app-macro-grid
     [rowData]="filteredRows()"
-    [gridOptions]="gridOptions"
+    [columnDefs]="columnDefs"
     [getRowId]="getRowId"
-    (gridReady)="onGridReady($event)"
-  ></ag-grid-angular>
+    [gridOptions]="gridOptions"
+    searchPlaceholder="Filter instrument…"
+  ></app-macro-grid>
 </div>
 
 <!-- d) Order ticket dialog -->

@@ -1,0 +1,52 @@
+<!-- Toolbar strip (sits directly above the grid) -->
+<div class="macro-grid-toolbar">
+  @if (title) {
+    <span class="macro-grid-title">{{ title }}</span>
+  }
+  <div class="macro-grid-toolbar-controls">
+    <input
+      pInputText
+      type="text"
+      class="macro-grid-search"
+      [placeholder]="searchPlaceholder"
+      [ngModel]="search()"
+      (ngModelChange)="onSearchChange($event)"
+    />
+    <p-select
+      [options]="densityOptions"
+      [(ngModel)]="densityModel"
+      styleClass="macro-grid-density"
+    ></p-select>
+    <p-button
+      label="Columns"
+      icon="pi pi-table"
+      [outlined]="true"
+      size="small"
+      (onClick)="toggleColumns()"
+    ></p-button>
+  </div>
+</div>
+
+<!-- Grid (fills the remaining height) -->
+<div class="macro-grid-area">
+  @if (columnDefs) {
+    <ag-grid-angular
+      class="macro-grid"
+      [theme]="theme()"
+      [gridOptions]="mergedOptions()"
+      [columnDefs]="columnDefs"
+      [rowData]="rowData"
+      [getRowId]="getRowId"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  } @else {
+    <ag-grid-angular
+      class="macro-grid"
+      [theme]="theme()"
+      [gridOptions]="mergedOptions()"
+      [rowData]="rowData"
+      [getRowId]="getRowId"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  }
+</div>
